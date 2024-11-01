@@ -1,0 +1,13 @@
+{
+  "add_bos_token": false,
+  "add_eos_token": false,
+  "model_max_length": 4096,
+  "unk_token": "<unk>",
+  "bos_token": "<|startoftext|>",
+  "eos_token": "<|endoftext|>",
+  "pad_token": "<unk>",
+  "sp_model_kwargs": {},
+  "clean_up_tokenization_spaces": false,
+  "legacy": true,
+  "tokenizer_class": "LlamaTokenizer"
+}
