@@ -667,7 +667,7 @@ class HolmesSdpaAttention(HolmesAttention):
         return attn_output, None, past_key_value
 
 
-LLAMA_ATTENTION_CLASSES = {
+HOLMES_ATTENTION_CLASSES = {
     "eager": HolmesAttention,
     "flash_attention_2": HolmesFlashAttention2,
     "sdpa": HolmesSdpaAttention,
@@ -679,7 +679,7 @@ class HolmesDecoderLayer(nn.Module):
         super().__init__()
         self.hidden_size = config.hidden_size
 
-        self.self_attn = LLAMA_ATTENTION_CLASSES[config._attn_implementation](config=config, layer_idx=layer_idx)
+        self.self_attn = HOLMES_ATTENTION_CLASSES[config._attn_implementation](config=config, layer_idx=layer_idx)
 
         self.mlp = HolmesMLP(config)
         self.input_layernorm = HolmesRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
@@ -742,7 +742,7 @@ class HolmesDecoderLayer(nn.Module):
         return outputs
 
 
-LLAMA_START_DOCSTRING = r"""
+HOLMES_START_DOCSTRING = r"""
     This model inherits from [`PreTrainedModel`]. Check the superclass documentation for the generic methods the
     library implements for all its model (such as downloading or saving, resizing the input embeddings, pruning heads
     etc.)
@@ -760,8 +760,8 @@ LLAMA_START_DOCSTRING = r"""
 
 
 @add_start_docstrings(
-    "The bare LLaMA Model outputting raw hidden-states without any specific head on top.",
-    LLAMA_START_DOCSTRING,
+    "The bare Holmes Model outputting raw hidden-states without any specific head on top.",
+    HOLMES_START_DOCSTRING,
 )
 class HolmesPreTrainedModel(PreTrainedModel):
     config_class = HolmesLLMConfig
@@ -787,7 +787,7 @@ class HolmesPreTrainedModel(PreTrainedModel):
                 module.weight.data[module.padding_idx].zero_()
 
 
-LLAMA_INPUTS_DOCSTRING = r"""
+HOLMES_INPUTS_DOCSTRING = r"""
     Args:
         input_ids (`torch.LongTensor` of shape `(batch_size, sequence_length)`):
             Indices of input sequence tokens in the vocabulary. Padding will be ignored by default should you provide
@@ -862,8 +862,8 @@ LLAMA_INPUTS_DOCSTRING = r"""
 
 
 @add_start_docstrings(
-    "The bare LLaMA Model outputting raw hidden-states without any specific head on top.",
-    LLAMA_START_DOCSTRING,
+    "The bare Holmes Model outputting raw hidden-states without any specific head on top.",
+    HOLMES_START_DOCSTRING,
 )
 class HolmesLLMModel(HolmesPreTrainedModel):
     """
@@ -895,7 +895,7 @@ class HolmesLLMModel(HolmesPreTrainedModel):
     def set_input_embeddings(self, value):
         self.embed_tokens = value
 
-    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(HOLMES_INPUTS_DOCSTRING)
     def forward(
         self,
         input_ids: torch.LongTensor = None,
@@ -1162,7 +1162,7 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
     def get_decoder(self):
         return self.model
 
-    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(HOLMES_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=CausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
     def forward(
         self,
@@ -1346,7 +1346,7 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
 
 @add_start_docstrings(
     """
-    The LLaMa Model transformer with a sequence classification head on top (linear layer).
+    The Holmes Model transformer with a sequence classification head on top (linear layer).
 
     [`HolmesForSequenceClassification`] uses the last token in order to do the classification, as other causal models
     (e.g. GPT-2) do.
@@ -1357,7 +1357,7 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
     padding tokens when `inputs_embeds` are passed instead of `input_ids`, it does the same (take the last value in
     each row of the batch).
     """,
-    LLAMA_START_DOCSTRING,
+    HOLMES_START_DOCSTRING,
 )
 class HolmesLLMForSequenceClassification(HolmesPreTrainedModel):
     def __init__(self, config):
@@ -1375,7 +1375,7 @@ class HolmesLLMForSequenceClassification(HolmesPreTrainedModel):
     def set_input_embeddings(self, value):
         self.model.embed_tokens = value
 
-    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(HOLMES_INPUTS_DOCSTRING)
     def forward(
         self,
         input_ids: torch.LongTensor = None,
@@ -1472,7 +1472,7 @@ class HolmesLLMForSequenceClassification(HolmesPreTrainedModel):
 The Holmes Model transformer with a span classification head on top for extractive question-answering tasks like
 SQuAD (a linear layer on top of the hidden-states output to compute `span start logits` and `span end logits`).
     """,
-    LLAMA_START_DOCSTRING,
+    HOLMES_START_DOCSTRING,
 )
 class HolmesLLMForQuestionAnswering(HolmesPreTrainedModel):
     base_model_prefix = "transformer"
@@ -1492,7 +1492,7 @@ class HolmesLLMForQuestionAnswering(HolmesPreTrainedModel):
     def set_input_embeddings(self, value):
         self.transformer.embed_tokens = value
 
-    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(HOLMES_INPUTS_DOCSTRING)
     def forward(
         self,
         input_ids: Optional[torch.LongTensor] = None,
@@ -1571,7 +1571,7 @@ class HolmesLLMForQuestionAnswering(HolmesPreTrainedModel):
     The Holmes Model transformer with a token classification head on top (a linear layer on top of the hidden-states
     output) e.g. for Named-Entity-Recognition (NER) tasks.
     """,
-    LLAMA_START_DOCSTRING,
+    HOLMES_START_DOCSTRING,
 )
 class HolmesLLMForTokenClassification(HolmesPreTrainedModel):
     def __init__(self, config):
@@ -1596,7 +1596,7 @@ class HolmesLLMForTokenClassification(HolmesPreTrainedModel):
     def set_input_embeddings(self, value):
         self.model.embed_tokens = value
 
-    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(HOLMES_INPUTS_DOCSTRING)
     def forward(
         self,
         input_ids: Optional[torch.LongTensor] = None,
