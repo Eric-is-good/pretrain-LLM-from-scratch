@@ -1,26 +1,30 @@
-from model.configuration_holmesllm import HolmesLLMConfig
-from model.modeling_holmesllm import HolmesLLMForCausalLM
-from transformers import LlamaTokenizer
+############################################  model  ############################################
 
-config_path = "model/"
+# from model.configuration_holmesllm import HolmesLLMConfig
+# from model.modeling_holmesllm import HolmesLLMForCausalLM
+# from transformers import LlamaTokenizer
 
-config = HolmesLLMConfig.from_pretrained(config_path, trust_remote_code=True)
-model = HolmesLLMForCausalLM(config).to(dtype=config.torch_dtype)
-tokenizer = LlamaTokenizer.from_pretrained(config_path, use_fast=True)
+# config_path = "model/"
 
-# 计算模型的参数量
-total_params = sum(p.numel() for p in model.parameters())
-print(f"Total number of parameters: {total_params}")
+# config = HolmesLLMConfig.from_pretrained(config_path, trust_remote_code=True)
+# model = HolmesLLMForCausalLM(config).to(dtype=config.torch_dtype)
+# tokenizer = LlamaTokenizer.from_pretrained(config_path, use_fast=True)
 
-# 测试模型架构，只需要 forward 成功即可
-input_text = "who live under the sea?"
-inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True)
-input_ids = inputs.input_ids
-print(input_ids)
-output = model.generate(input_ids=input_ids, max_length=10)
+# # 计算模型的参数量
+# total_params = sum(p.numel() for p in model.parameters())
+# print(f"Total number of parameters: {total_params}")
 
-print(output)
+# # 测试模型架构，只需要 forward 成功即可
+# input_text = "who live under the sea?"
+# inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True)
+# input_ids = inputs.input_ids
+# print(input_ids)
+# output = model.generate(input_ids=input_ids, max_length=10)
 
+# print(output)
+
+
+############################################  tokenizer  ############################################
 # from transformers import LlamaTokenizer
 
 # # 加载预训练模型的tokenizer
@@ -34,3 +38,26 @@ print(output)
 
 # # 保存新的tokenizer
 # tokenizer.save_pretrained("t/")
+
+
+
+############################################  data  ############################################
+# from transformers import LlamaTokenizer
+# import numpy as np
+# from data.utils.data_process import concat_sentense_tokenize, convert_list_to_numpy
+
+# # 加载预训练模型的tokenizer
+# tokenizer = LlamaTokenizer.from_pretrained("model/")
+
+# max_length = 16
+# start_token = "<|startoftext|>"
+# end_token = "<|endoftext|>"
+
+# test_sentence = ["who live under the sea?"] * 100
+ 
+# output = concat_sentense_tokenize(test_sentence, tokenizer, max_length)
+
+# output = convert_list_to_numpy(output)
+
+# # 保存数据
+# np.save("data.npy", output)
