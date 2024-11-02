@@ -653,7 +653,7 @@
     },
     {
       "id": 145,
-      "content": "<|unused000|>",
+      "content": "<pad>",
       "single_word": false,
       "lstrip": false,
       "rstrip": false,
