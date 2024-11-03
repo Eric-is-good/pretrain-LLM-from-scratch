@@ -12,8 +12,12 @@ import time
 
 class SkyDataProcess(DataProcess):
     def get_all_data_files(self, data_dir):
+        # 获取所有没有拓展名的文件名列表
+        existed_files = [file for file in os.listdir(data_dir) if '.' not in file]
         # 获取所有json文件
-        self.data_files = [os.path.join(data_dir, file) for file in os.listdir(data_dir) if file.endswith(".jsonl")]
+        self.data_files = [os.path.join(data_dir, file) 
+                           for file in os.listdir(data_dir) 
+                           if file.endswith(".jsonl") and file.replace(".jsonl", "") not in existed_files]
     
     def precess_one_file(self, data_path):
         # 每一行都是一个json对象，读取里面的text字段
