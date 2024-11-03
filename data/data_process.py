@@ -17,7 +17,7 @@ class DataProcess:
     def process_all_files(self):
         # 使用多进程处理文件
         results = []
-        with ProcessPoolExecutor(max_workers=2) as executor:
+        with ProcessPoolExecutor(max_workers=6) as executor:
             # 提交所有文件处理任务到进程池
             futures = {executor.submit(self.precess_one_file, file): file for file in self.data_files}
             
@@ -32,21 +32,26 @@ class DataProcess:
         print("All files processed.")
                     
     
-    def concat_sentense_tokenize(self, sentences):
+    def tokenize_sentense(self, sentence):
         start_token = self.tokenizer.bos_token
         end_token = self.tokenizer.eos_token
+
+        sentence_with_tokens = f"{start_token} {sentence} {end_token}"
+            
+        # 将句子转换为 token ids
+        tokens = self.tokenizer.encode(sentence_with_tokens, add_special_tokens=False, 
+                                truncation=True, max_length=self.max_length)
+            
+        return tokens
+    
+    def concat_sentense_tokenize(self, sentences):
         # 存储拼接后的句子
         concatenated_sentences = []
         current_tokens = []
 
         # 循环遍历每个句子，并按长度限制拼接
         for sentence in tqdm(sentences):
-            # 为句子添加特殊标记
-            sentence_with_tokens = f"{start_token} {sentence} {end_token}"
-            
-            # 将句子转换为 token ids
-            tokens = self.tokenizer.encode(sentence_with_tokens, add_special_tokens=False, 
-                                    truncation=True, max_length=self.max_length)
+            tokens = self.tokenize_sentense(sentence)
             
             # 判断加入当前句子是否超出 self.max_length
             if len(current_tokens) + len(tokens) > self.max_length:

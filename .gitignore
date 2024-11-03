@@ -6,3 +6,5 @@
  
 # 忽略 __pycache__ 目录及其所有子内容
 **/__pycache__/
+
+.venv
