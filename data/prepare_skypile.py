@@ -1,23 +1,42 @@
-from data_process import DataProcess
 import json
-from transformers import LlamaTokenizer
 import os
+
 import numpy as np
-import mmap
+import pandas as pd
 from tqdm import tqdm
-import time
+from transformers import LlamaTokenizer
+
+from data_process import DataProcess
 
 # # 加载预训练模型的tokenizer
 # tokenizer = LlamaTokenizer.from_pretrained("model/", use_fast=True)
 
+
+def get_processed_files(data_dir: str) -> list:
+    """考虑到现在把结果装到子文件夹里了，所以需要从metadata.csv获取处理过的文件"""
+    all_files = os.listdir(data_dir)
+    processed_files = []
+    for file in all_files:
+        if os.path.isdir(os.path.join(data_dir,file)):
+            metadata_path = os.path.join(data_dir, file, "metadata.csv")
+            if os.path.exists(metadata_path):
+                metadata = pd.read_csv(metadata_path)
+                processed_files.extend(metadata["original_name"].tolist())
+        elif file.endswith(".npy"):
+            processed_files.append(file.strip(".npy"))
+        else:
+            continue
+    return processed_files
+
 class SkyDataProcess(DataProcess):
+    
     def get_all_data_files(self, data_dir):
         # 获取已经处理过的文件
-        existed_files = [file for file in os.listdir(data_dir) if file.endswith(".npy")]
+        existed_files = get_processed_files(data_dir)
         # 获取所有json文件
         self.data_files = [os.path.join(data_dir, file) 
                            for file in os.listdir(data_dir) 
-                           if file.endswith(".jsonl") and file.replace(".jsonl", ".npy") not in existed_files]
+                           if file.endswith(".jsonl") and file.strip(".jsonl") not in existed_files]
         print(f"{len(self.data_files)} files to process. Total {len(existed_files) + len(self.data_files)} files.")
     
     def precess_one_file(self, data_path):
@@ -55,7 +74,7 @@ class SkyDataProcess(DataProcess):
         print(f"Save {npy_file_name} successfully. Total {array.shape[0]} sentences.")
             
 if __name__ == "__main__":
-    dataset_dir = "E:\\Projects\\HolmesLM\\dataset\\test"
+    dataset_dir = "E:\\Projects\\HolmesLM\\dataset\\skypile"
     # 加载预训练模型的tokenizer
     tokenizer = LlamaTokenizer.from_pretrained("model/", use_fast=True)
     # 创建数据处理对象
@@ -63,5 +82,5 @@ if __name__ == "__main__":
     # 获取所有数据文件
     data_process.get_all_data_files(dataset_dir)
     # 处理所有数据文件
-    data_process.process_all_files(1)
+    data_process.process_all_files()
                 
