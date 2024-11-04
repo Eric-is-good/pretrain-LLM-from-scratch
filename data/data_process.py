@@ -14,10 +14,10 @@ class DataProcess:
     def precess_one_file(self, data_path):
         raise NotImplementedError
     
-    def process_all_files(self):
+    def process_all_files(self, max_workers=6):
         # self.precess_one_file(self.data_files[0])
         # 使用多进程处理文件
-        with ProcessPoolExecutor(max_workers=6) as executor:
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
             # 提交所有文件处理任务到进程池
             executor.map(self.precess_one_file, self.data_files)
             # 等待所有任务完成

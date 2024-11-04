@@ -12,12 +12,13 @@ import time
 
 class SkyDataProcess(DataProcess):
     def get_all_data_files(self, data_dir):
-        # 获取所有没有拓展名的文件名列表
-        existed_files = [file for file in os.listdir(data_dir) if '.' not in file]
+        # 获取已经处理过的文件
+        existed_files = [file for file in os.listdir(data_dir) if file.endswith(".npy")]
         # 获取所有json文件
         self.data_files = [os.path.join(data_dir, file) 
                            for file in os.listdir(data_dir) 
-                           if file.endswith(".jsonl") and file.replace(".jsonl", "") not in existed_files]
+                           if file.endswith(".jsonl") and file.replace(".jsonl", ".npy") not in existed_files]
+        print(f"{len(self.data_files)} files to process. Total {len(existed_files) + len(self.data_files)} files.")
     
     def precess_one_file(self, data_path):
         # 每一行都是一个json对象，读取里面的text字段
@@ -54,7 +55,7 @@ class SkyDataProcess(DataProcess):
         print(f"Save {npy_file_name} successfully. Total {array.shape[0]} sentences.")
             
 if __name__ == "__main__":
-    dataset_dir = "E:\\Projects\\HolmesLM\\dataset\\skypile"
+    dataset_dir = "E:\\Projects\\HolmesLM\\dataset\\test"
     # 加载预训练模型的tokenizer
     tokenizer = LlamaTokenizer.from_pretrained("model/", use_fast=True)
     # 创建数据处理对象
@@ -62,5 +63,5 @@ if __name__ == "__main__":
     # 获取所有数据文件
     data_process.get_all_data_files(dataset_dir)
     # 处理所有数据文件
-    data_process.process_all_files()
+    data_process.process_all_files(1)
                 
