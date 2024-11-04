@@ -1,6 +1,6 @@
 from tqdm import tqdm
 import numpy as np
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 
 class DataProcess:
     def __init__(self, tokenizer):
@@ -14,21 +14,13 @@ class DataProcess:
     def precess_one_file(self, data_path):
         raise NotImplementedError
     
-    def process_all_files(self):
+    def process_all_files(self, max_workers=6):
+        # self.precess_one_file(self.data_files[0])
         # 使用多进程处理文件
-        results = []
-        with ProcessPoolExecutor(max_workers=6) as executor:
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
             # 提交所有文件处理任务到进程池
-            futures = {executor.submit(self.precess_one_file, file): file for file in self.data_files}
-            
-            # 收集处理结果
-            for future in as_completed(futures):
-                file = futures[future]
-                try:
-                    result = future.result()  # 获取处理结果
-                    results.append((file, result))
-                except Exception as e:
-                    print(f"Error processing file {file}: {e}")
+            executor.map(self.precess_one_file, self.data_files)
+            # 等待所有任务完成
         print("All files processed.")
                     
     

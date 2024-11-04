@@ -1,49 +1,53 @@
-from data_process import DataProcess
 import json
-from transformers import LlamaTokenizer
 import os
+
 import numpy as np
-import mmap
+import pandas as pd
 from tqdm import tqdm
-import time
+from transformers import LlamaTokenizer
+
+from data_process import DataProcess
 
 # # 加载预训练模型的tokenizer
 # tokenizer = LlamaTokenizer.from_pretrained("model/", use_fast=True)
 
+
+def get_processed_files(data_dir: str) -> list:
+    """考虑到现在把结果装到子文件夹里了，所以需要从metadata.csv获取处理过的文件"""
+    all_files = os.listdir(data_dir)
+    processed_files = []
+    for file in all_files:
+        if os.path.isdir(os.path.join(data_dir,file)):
+            metadata_path = os.path.join(data_dir, file, "metadata.csv")
+            if os.path.exists(metadata_path):
+                metadata = pd.read_csv(metadata_path)
+                processed_files.extend(metadata["original_name"].tolist())
+        elif file.endswith(".npy"):
+            processed_files.append(file.strip(".npy"))
+        else:
+            continue
+    return processed_files
+
 class SkyDataProcess(DataProcess):
+    
     def get_all_data_files(self, data_dir):
+        # 获取已经处理过的文件
+        existed_files = get_processed_files(data_dir)
         # 获取所有json文件
-        self.data_files = [os.path.join(data_dir, file) for file in os.listdir(data_dir) if file.endswith(".jsonl")]
-    
-    @staticmethod
-    def __amend_to_ndarray(sub_array: np.ndarray, array: np.ndarray | None = None) -> np.ndarray:
-        if array is None:
-            return sub_array.reshape(1, -1).astype(np.uint16)
-        else:    
-            return np.concatenate((array, sub_array.reshape(1, -1).astype(np.uint16)), axis=0)
-    
-    # @staticmethod    
-    # def __count_lines(filename):
-    #     """在不完全加载文件的情况下计算文件行数"""
-    #     import time
-    #     import mmap
-    #     filename = "E:\\Projects\\HolmesLM\\dataset\\skypile\\2021-17_zh_middle_0002.jsonl"
-    #     start_time = time.time()
-    #     with open(filename, 'r') as f:
-    #         buf = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
-    #         ret = buf.count(b'\n')
-    #         end_time = time.time()
-    #         print(f"Time taken to count lines in {filename}: {end_time - start_time} seconds")
-    #         return ret
+        self.data_files = [os.path.join(data_dir, file) 
+                           for file in os.listdir(data_dir) 
+                           if file.endswith(".jsonl") and file.strip(".jsonl") not in existed_files]
+        print(f"{len(self.data_files)} files to process. Total {len(existed_files) + len(self.data_files)} files.")
     
     def precess_one_file(self, data_path):
         # 每一行都是一个json对象，读取里面的text字段
         npy_file_name = data_path.replace(".jsonl", "")
-        array = None
+        array = []
         with open(data_path, "r", encoding="utf-8") as f:
             current_tokens = []
             # for every sentence
-            for line in tqdm(f,total=410000, desc=f"Processing {data_path}, 总数仅供参考"):
+            # 多线程tqdm会有显示问题，所以这里不用tqdm
+            for line in tqdm(f):
                 sentence = json.loads(line)["text"]
                 tokens = self.tokenize_sentense(sentence)
                 # append to current_tokens
@@ -52,7 +56,7 @@ class SkyDataProcess(DataProcess):
                     current_tokens += [self.tokenizer.pad_token_id] * (self.max_length - len(current_tokens))
                     # 写入numpy数组
                     npy = self.convert_list_to_numpy(current_tokens)
-                    array = self.__amend_to_ndarray(npy, array)
+                    array.append(npy)
                     # 开始新行
                     current_tokens = tokens
                 else:
@@ -62,9 +66,9 @@ class SkyDataProcess(DataProcess):
         if current_tokens:
             current_tokens += [self.tokenizer.pad_token_id] * (self.max_length - len(current_tokens))
             npy = self.convert_list_to_numpy(current_tokens)
-            array = self.__amend_to_ndarray(npy, array)
+            array.append(npy)
         
-        assert array is not None
+        array = np.stack(array, axis=0)
         np.save(npy_file_name, array)
             
         print(f"Save {npy_file_name} successfully. Total {array.shape[0]} sentences.")
