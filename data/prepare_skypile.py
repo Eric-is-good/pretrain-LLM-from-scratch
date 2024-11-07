@@ -39,7 +39,7 @@ class SkyDataProcess(DataProcess):
                            if file.endswith(".jsonl") and file.strip(".jsonl") not in existed_files]
         print(f"{len(self.data_files)} files to process. Total {len(existed_files) + len(self.data_files)} files.")
     
-    def precess_one_file(self, data_path):
+    def precess_one_file(self, data_path, context=200):
         # 每一行都是一个json对象，读取里面的text字段
         npy_file_name = data_path.replace(".jsonl", "")
         array = []
@@ -50,18 +50,32 @@ class SkyDataProcess(DataProcess):
             for line in tqdm(f):
                 sentence = json.loads(line)["text"]
                 tokens = self.tokenize_sentense(sentence)
-                # append to current_tokens
-                if len(current_tokens) + len(tokens) > self.max_length:
-                    # 如果超出，将当前行填充到 self.max_length 并存入结果列表
-                    current_tokens += [self.tokenizer.pad_token_id] * (self.max_length - len(current_tokens))
-                    # 写入numpy数组
-                    npy = self.convert_list_to_numpy(current_tokens)
+                # # append to current_tokens
+                # if len(current_tokens) + len(tokens) > self.max_length:
+                #     # 如果超出，将当前行填充到 self.max_length 并存入结果列表
+                #     current_tokens += [self.tokenizer.pad_token_id] * (self.max_length - len(current_tokens))
+                #     # 写入numpy数组
+                #     npy = self.convert_list_to_numpy(current_tokens)
+                #     array.append(npy)
+                #     # 开始新行
+                #     current_tokens = tokens
+                # else:
+                #     # 否则将当前句子加入当前行
+                #     current_tokens += tokens
+                
+                current_tokens += tokens
+                if len(current_tokens) > self.max_length:
+                    exceed_tokens = current_tokens[self.max_length:]  # 截取超出部分
+                    not_exceed_tokens = current_tokens[:self.max_length]  # 截断到 max_length
+                    npy = self.convert_list_to_numpy(not_exceed_tokens)
                     array.append(npy)
-                    # 开始新行
-                    current_tokens = tokens
-                else:
-                    # 否则将当前句子加入当前行
-                    current_tokens += tokens
+                    
+                    # 判断损失的下文多少
+                    if len(exceed_tokens) < context:
+                        current_tokens = []
+                    else:
+                        current_tokens = exceed_tokens
+
         # 最后一行填充到 self.max_length 并加入结果列表
         if current_tokens:
             current_tokens += [self.tokenizer.pad_token_id] * (self.max_length - len(current_tokens))
