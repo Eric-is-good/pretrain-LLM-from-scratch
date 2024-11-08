@@ -683,10 +683,7 @@ class HolmesDecoderLayer(nn.Module):
     def __init__(self, config: HolmesLLMConfig, layer_idx: int):
         super().__init__()
         self.hidden_size = config.hidden_size
-
-        # self.self_attn = HOLMES_ATTENTION_CLASSES[config._attn_implementation](config=config, layer_idx=layer_idx)
-        self.self_attn = HOLMES_ATTENTION_CLASSES["flash_attention_2"](config=config, layer_idx=layer_idx)
-
+        self.self_attn = HOLMES_ATTENTION_CLASSES[config._attn_implementation](config=config, layer_idx=layer_idx)
         self.mlp = HolmesMLP(config)
         self.input_layernorm = HolmesRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
         self.post_attention_layernorm = HolmesRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
@@ -1135,6 +1132,7 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
 
     def __init__(self, config):
         super().__init__(config)
+        config._attn_implementation = "flash_attention_2"  # fixed
         self.generate_labels = False
         self.model = HolmesLLMModel(config)
         self.vocab_size = config.vocab_size
@@ -1214,10 +1212,12 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
         # input_ids = input_ids[:, :2048]   # for debugging
         
         if self.generate_labels:
-            attention_mask = input_ids.ne(self.config.pad_token_id) & input_ids.ne(0)
+            attention_mask = (input_ids != self.config.pad_token_id) & (input_ids != 0)
             labels = torch.where(attention_mask & input_ids.ne(self.config.bos_token_id), input_ids, torch.tensor(-100, device=input_ids.device))
-            position_ids = torch.arange(input_ids.size(1), device=input_ids.device).expand_as(input_ids)
-            attention_mask = None
+            # seq_len = input_ids.size(1)
+            # causal_mask = torch.tril(torch.ones((seq_len, seq_len), dtype=torch.bool, device=input_ids.device))
+            # attention_mask = attention_mask.unsqueeze(1).expand(-1, seq_len, -1)
+            # attention_mask = attention_mask & causal_mask
             
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
