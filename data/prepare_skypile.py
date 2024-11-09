@@ -96,5 +96,5 @@ if __name__ == "__main__":
     # 获取所有数据文件
     data_process.get_all_data_files(dataset_dir)
     # 处理所有数据文件
-    data_process.process_all_files()
+    data_process.process_all_files(6)
                 
