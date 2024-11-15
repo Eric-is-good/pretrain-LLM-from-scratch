@@ -3,7 +3,7 @@
 deepspeed train/training.py \
     --deepspeed deepspeed/zero3.json \
     --model_name_or_path save_model/ \
-    --data_path /root/autodl-tmp/ \
+    --data_path /mnt/e/Projects/HolmesLM/Holmes_data/1 \
     --bf16 True \
     --output_dir output/ \
     --num_train_epochs 1 \
