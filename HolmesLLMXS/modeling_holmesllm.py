@@ -1132,7 +1132,7 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
 
     def __init__(self, config):
         super().__init__(config)
-        config._attn_implementation = "flash_attention_2"  # fixed
+        # config._attn_implementation = "flash_attention_2"  # fixed
         self.generate_labels = False
         self.model = HolmesLLMModel(config)
         self.vocab_size = config.vocab_size
