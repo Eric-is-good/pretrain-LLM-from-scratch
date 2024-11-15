@@ -2,10 +2,11 @@
 
 deepspeed train/training.py \
     --deepspeed deepspeed/zero3.json \
-    --model_name_or_path save_model/ \
-    --data_path /mnt/e/Projects/HolmesLM/Holmes_data/1 \
+    --model_name_or_path HolmesLLMXS/ \
+    --data_path /data \
+    --data_cache_path /cache \
     --bf16 True \
-    --output_dir output/ \
+    --output_dir /model \
     --num_train_epochs 1 \
     --per_device_train_batch_size 2 \
     --per_device_eval_batch_size 2 \
@@ -19,7 +20,7 @@ deepspeed train/training.py \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine_with_restarts" \
     --logging_steps 1 \
-    --tf32 True \
+    --tf32 False \
     --model_max_length 4096 \
     --gradient_checkpointing True \
     --dataloader_num_workers 4 \

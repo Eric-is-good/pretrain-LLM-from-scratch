@@ -1,3 +1,5 @@
 datasets
+accelerate
 transformers
 deepspeed
+wandb

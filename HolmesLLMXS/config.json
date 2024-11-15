@@ -1,5 +1,6 @@
 {
   "_name_or_path": "HolmesLLMXS/",
+  "_attn_implementation": "eager",
   "architectures": [
     "HolmesLLMForCausalLM"
   ],
@@ -11,7 +12,7 @@
   },
   "bos_token_id": 1,
   "eos_token_id": 2,
-  "head_dim": 64,
+  "head_dim": 32,
   "hidden_act": "silu",
   "hidden_size": 512,
   "initializer_range": 0.02,
