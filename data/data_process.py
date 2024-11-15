@@ -1,4 +1,5 @@
 from tqdm import tqdm
+from warnings import deprecated
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor
 
@@ -36,6 +37,7 @@ class DataProcess:
             
         return tokens
     
+    @deprecated("The function is inefficient and inconsistent with currently used methods.")
     def concat_sentense_tokenize(self, sentences):
         # 存储拼接后的句子
         concatenated_sentences = []

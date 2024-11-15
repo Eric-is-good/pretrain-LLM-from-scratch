@@ -650,14 +650,19 @@ class HolmesSdpaAttention(HolmesAttention):
         # in SDPA to support both torch.compile's dynamic shapes and full graph options. An inline conditional prevents dynamic shapes from compiling.
         is_causal = True if causal_mask is None and q_len > 1 else False
 
-        attn_output = torch.nn.functional.scaled_dot_product_attention(
-            query_states,
-            key_states,
-            value_states,
-            attn_mask=causal_mask,
-            dropout_p=self.attention_dropout if self.training else 0.0,
-            is_causal=is_causal,
-        )
+        with torch.backends.cuda.sdp_kernel(
+            enable_flash=True, 
+            enable_math=False, 
+            enable_mem_efficient=False
+        ):
+            attn_output = torch.nn.functional.scaled_dot_product_attention(
+                query_states,
+                key_states,
+                value_states,
+                attn_mask=causal_mask,
+                dropout_p=self.attention_dropout if self.training else 0.0,
+                is_causal=is_causal,
+            )
 
         attn_output = attn_output.transpose(1, 2).contiguous()
         attn_output = attn_output.view(bsz, q_len, -1)
@@ -678,9 +683,7 @@ class HolmesDecoderLayer(nn.Module):
     def __init__(self, config: HolmesLLMConfig, layer_idx: int):
         super().__init__()
         self.hidden_size = config.hidden_size
-
         self.self_attn = HOLMES_ATTENTION_CLASSES[config._attn_implementation](config=config, layer_idx=layer_idx)
-
         self.mlp = HolmesMLP(config)
         self.input_layernorm = HolmesRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
         self.post_attention_layernorm = HolmesRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
@@ -1129,6 +1132,8 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
 
     def __init__(self, config):
         super().__init__(config)
+        config._attn_implementation = "flash_attention_2"  # fixed
+        self.generate_labels = False
         self.model = HolmesLLMModel(config)
         self.vocab_size = config.vocab_size
         if not getattr(self.config, "share_embedding", False):
@@ -1203,12 +1208,23 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
         >>> tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
         "Hey, are you conscious? Can you talk to me?\nI'm not conscious, but I can talk to you."
         ```"""
+        
+        # input_ids = input_ids[:, :2048]   # for debugging
+        
+        if self.generate_labels:
+            attention_mask = (input_ids != self.config.pad_token_id) & (input_ids != 0)
+            labels = torch.where(attention_mask & input_ids.ne(self.config.bos_token_id), input_ids, torch.tensor(-100, device=input_ids.device))
+            # seq_len = input_ids.size(1)
+            # causal_mask = torch.tril(torch.ones((seq_len, seq_len), dtype=torch.bool, device=input_ids.device))
+            # attention_mask = attention_mask.unsqueeze(1).expand(-1, seq_len, -1)
+            # attention_mask = attention_mask & causal_mask
+            
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
             output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
         )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
+        
         # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
         outputs = self.model(
             input_ids=input_ids,
@@ -1235,7 +1251,8 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
                 logits = F.linear(hidden_states, self.model.embed_tokens.weight)
         logits = logits.float()
 
-        loss = None
+        loss = None    
+        
         if labels is not None:
             # Shift so that tokens < n predict n
             shift_logits = logits[..., :-1, :].contiguous()
