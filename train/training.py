@@ -1,22 +1,14 @@
-import sys
-sys.path.append("/home/eric/llm/")
-
 import os
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Sequence, List
 
 import numpy as np
-from tqdm import tqdm
 import torch
 import transformers
-from transformers import LlamaTokenizer
-from transformers import LlamaForCausalLM
-from transformers import Trainer, TrainingArguments
+from transformers import AutoModelForCausalLM, AutoConfig
+from transformers import Trainer
 from datasets import Dataset
 import deepspeed
-
-from model.configuration_holmesllm import HolmesLLMConfig
-from model.modeling_holmesllm import HolmesLLMForCausalLM
 
 # 将每个 .npy 文件加载为字典
 def generate_data(file_paths):
@@ -86,8 +78,14 @@ def train():
     local_rank = deepspeed.comm.get_local_rank()
     print(local_rank)
 
-    model = HolmesLLMForCausalLM.from_pretrained(training_args.model_name_or_path,
-                                                cache_dir=training_args.cache_dir)
+    try:
+        model = AutoModelForCausalLM.from_pretrained(training_args.model_name_or_path,
+                                                cache_dir=training_args.cache_dir,
+                                                trust_remote_code=True)
+    except OSError:
+        config = AutoConfig.from_pretrained(training_args.model_name_or_path, trust_remote_code=True)
+        model = AutoModelForCausalLM.from_config(config=config, trust_remote_code=True)
+        
 
     rank0_print(model)
     
@@ -104,7 +102,7 @@ def train():
 
     # 创建 Dataset 对象
     file_paths = [os.path.join(training_args.data_path, file) 
-                  for file in os.listdir(training_args.data_path) if file.endswith(".npy")]
+                  for file in os.listdir(training_args.data_path) if file.endswith(".npy")][0:4]
     dataset = Dataset.from_generator(lambda: generate_data(file_paths), cache_dir=training_args.data_cache_path)
 
     trainer = Trainer(
