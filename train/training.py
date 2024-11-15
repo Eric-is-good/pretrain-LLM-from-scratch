@@ -1,3 +1,6 @@
+import sys
+sys.path.append("/home/eric/llm/")
+
 import os
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Sequence, List
