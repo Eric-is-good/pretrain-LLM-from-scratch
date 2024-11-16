@@ -1,6 +1,6 @@
 {
   "_name_or_path": "HolmesLLMXS/",
-  "_attn_implementation": "eager",
+  "_attn_implementation": "flash_attention_2",
   "architectures": [
     "HolmesLLMForCausalLM"
   ],

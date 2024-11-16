@@ -1,15 +1,14 @@
 #!/bin/bash
 
-deepspeed train/training.py \
-    --deepspeed deepspeed/zero0.json \
+python train/training.py \
     --model_name_or_path HolmesLLMXS/ \
     --data_path /root/autodl-fs/Holmes_data/1 \
     --data_cache_path /root/autodl-tmp \
     --bf16 True \
     --output_dir XS_out/ \
     --num_train_epochs 1 \
-    --per_device_train_batch_size 2 \
-    --per_device_eval_batch_size 2 \
+    --per_device_train_batch_size 4 \
+    --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps 1 \
     --evaluation_strategy "no" \
     --save_strategy "steps" \

@@ -8,7 +8,7 @@ import transformers
 from transformers import AutoModelForCausalLM, AutoConfig
 from transformers import Trainer
 from datasets import Dataset
-import deepspeed
+# import deepspeed
 
 # 将每个 .npy 文件加载为字典
 def generate_data(file_paths):
@@ -75,19 +75,18 @@ def train():
     global local_rank
     parser = transformers.HfArgumentParser(HolmesArguments)
     training_args = parser.parse_args_into_dataclasses()[0]
-    local_rank = deepspeed.comm.get_local_rank()
-    print(local_rank)
+    # local_rank = deepspeed.comm.get_local_rank()
+    # print(local_rank)
 
     try:
         model = AutoModelForCausalLM.from_pretrained(training_args.model_name_or_path,
                                                 cache_dir=training_args.cache_dir,
-                                                trust_remote_code=True)
+                                                trust_remote_code=True).type(torch.float16)
     except OSError:
         config = AutoConfig.from_pretrained(training_args.model_name_or_path, trust_remote_code=True)
-        model = AutoModelForCausalLM.from_config(config=config, trust_remote_code=True)
-        
+        model = AutoModelForCausalLM.from_config(config=config, trust_remote_code=True).type(torch.float16)
 
-    rank0_print(model)
+    # rank0_print(model)
     
     model.config.use_cache = False
     model.generate_labels = True
@@ -104,6 +103,9 @@ def train():
     file_paths = [os.path.join(training_args.data_path, file) 
                   for file in os.listdir(training_args.data_path) if file.endswith(".npy")][0:4]
     dataset = Dataset.from_generator(lambda: generate_data(file_paths), cache_dir=training_args.data_cache_path)
+
+    # torch._dynamo.config.capture_scalar_outputs = True
+    model = torch.compile(model)
 
     trainer = Trainer(
         model=model,  
