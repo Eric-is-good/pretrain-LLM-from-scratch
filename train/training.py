@@ -1,20 +1,22 @@
 import sys
 sys.path.append("/home/eric/llm/")
 
-from model.configuration_holmesllm import HolmesLLMConfig
-from transformers import LlamaForCausalLM
-from model.modeling_holmesllm import HolmesLLMForCausalLM
+import os
+from dataclasses import dataclass, field
+from typing import Dict, Optional, Sequence, List
+
+import numpy as np
+from tqdm import tqdm
+import torch
 import transformers
 from transformers import LlamaTokenizer
-import torch
-from datasets import Dataset
-import numpy as np
-import os
-from tqdm import tqdm
-from dataclasses import dataclass, field
+from transformers import LlamaForCausalLM
 from transformers import Trainer, TrainingArguments
-from typing import Dict, Optional, Sequence, List
+from datasets import Dataset
 import deepspeed
+
+from model.configuration_holmesllm import HolmesLLMConfig
+from model.modeling_holmesllm import HolmesLLMForCausalLM
 
 # 将每个 .npy 文件加载为字典
 def generate_data(file_paths):
