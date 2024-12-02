@@ -1,7 +1,8 @@
-from tqdm import tqdm
-from warnings import deprecated
-import numpy as np
+# from warnings import deprecated
 from concurrent.futures import ProcessPoolExecutor
+
+from tqdm import tqdm
+import numpy as np
 
 class DataProcess:
     def __init__(self, tokenizer):
@@ -12,7 +13,7 @@ class DataProcess:
     def get_all_data_files(self, data_dir):
         raise NotImplementedError
     
-    def precess_one_file(self, data_path):
+    def process_one_file(self, data_path):
         raise NotImplementedError
     
     def process_all_files(self, max_workers=6):
@@ -20,7 +21,9 @@ class DataProcess:
         # 使用多进程处理文件
         with ProcessPoolExecutor(max_workers=max_workers) as executor:
             # 提交所有文件处理任务到进程池
-            executor.map(self.precess_one_file, self.data_files)
+            result = executor.map(self.process_one_file, self.data_files)
+            for array in tqdm(result, total=len(self.data_files)):
+                yield from array
             # 等待所有任务完成
         print("All files processed.")
                     
@@ -37,7 +40,7 @@ class DataProcess:
             
         return tokens
     
-    @deprecated("The function is inefficient and inconsistent with currently used methods.")
+    # @deprecated("The function is inefficient and inconsistent with currently used methods.")
     def concat_sentense_tokenize(self, sentences):
         # 存储拼接后的句子
         concatenated_sentences = []
