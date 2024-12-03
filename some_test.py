@@ -1,63 +1,16 @@
-############################################  model  ############################################
+#################################### test model #####################################
+# model.modeling_holmesllm.py 中 687 行写死了 eager 用于推理, 需要 flash_attn 则注释掉
+from model.modeling_holmesllm import HolmesLLMForCausalLM
+from transformers import LlamaTokenizer
 
-# from model.configuration_holmesllm import HolmesLLMConfig
-# from model.modeling_holmesllm import HolmesLLMForCausalLM
-# from transformers import LlamaTokenizer
+model = HolmesLLMForCausalLM.from_pretrained("model/").to("cuda")
+tokenizer = LlamaTokenizer.from_pretrained("model/")
+model.eval()
 
-# config_path = "model/"
-
-# config = HolmesLLMConfig.from_pretrained(config_path, trust_remote_code=True)
-# model = HolmesLLMForCausalLM(config).to(dtype=config.torch_dtype)
-# tokenizer = LlamaTokenizer.from_pretrained(config_path, use_fast=True)
-
-# # 计算模型的参数量
-# total_params = sum(p.numel() for p in model.parameters())
-# print(f"Total number of parameters: {total_params}")
-
-# # 测试模型架构，只需要 forward 成功即可
-# input_text = "who live under the sea?"
-# inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True)
-# input_ids = inputs.input_ids
-# print(input_ids)
-# output = model.generate(input_ids=input_ids, max_length=10)
-
-# print(output)
-
-
-############################################  tokenizer  ############################################
-# from transformers import LlamaTokenizer
-
-# # 加载预训练模型的tokenizer
-# tokenizer = LlamaTokenizer.from_pretrained("model/")
-
-# # 把pad_token设置为<pad>
-# tokenizer.pad_token = "<pad>"
-
-# print(tokenizer.pad_token)
-# print(tokenizer.pad_token_id)
-
-# # 保存新的tokenizer
-# tokenizer.save_pretrained("t/")
-
-
-
-############################################  data  ############################################
-# from transformers import LlamaTokenizer
-# import numpy as np
-# from data.utils.data_process import concat_sentense_tokenize, convert_list_to_numpy
-
-# # 加载预训练模型的tokenizer
-# tokenizer = LlamaTokenizer.from_pretrained("model/")
-
-# max_length = 16
-# start_token = "<|startoftext|>"
-# end_token = "<|endoftext|>"
-
-# test_sentence = ["who live under the sea?"] * 100
- 
-# output = concat_sentense_tokenize(test_sentence, tokenizer, max_length)
-
-# output = convert_list_to_numpy(output)
-
-# # 保存数据
-# np.save("data.npy", output)
+input_text = "<|startoftext|>菠萝和凤梨的区别是"
+inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True)
+input_ids = inputs.input_ids.to("cuda")
+print(input_ids)
+output = model.generate(input_ids=input_ids, max_length=256, do_sample=True, temperature=0.8, top_k=50, top_p=0.95, num_return_sequences=1)
+print(output[0])
+print(tokenizer.decode(output[0], skip_special_tokens=False))

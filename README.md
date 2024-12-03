@@ -21,3 +21,12 @@
 - 我们希望模型在架构上，使用改良的 transformer，使得模型在推理时，具有更快的速度
 - 我们希望模型具有强大的思维链能力（接近高一量级 ≈ 10B的模型所具有的）
 
+
+
+## 如何运行
+
+从 [**这里 huggingface**](https://huggingface.co/ej2/Holmes_history/tree/main) 下载模型权重，我们记录了一系列的模型权重点。
+
+*目前最新的是训练了 80B token 的模型。*
+
+将下载的 model.safetensors 放进代码 model 文件夹下，即可运行 some_test.py 文件，目前只有预训练模型，只能补全句子。
