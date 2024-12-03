@@ -17,7 +17,7 @@
   "hidden_size": 1024,
   "initializer_range": 0.02,
   "intermediate_size": 3072,
-  "layer_sharing": true,
+  "layer_sharing": false,
   "max_position_embeddings": 4096,
   "mlp_bias": false,
   "model_type": "holmesllm",

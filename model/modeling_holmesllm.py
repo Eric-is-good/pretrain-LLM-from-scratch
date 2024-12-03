@@ -683,6 +683,9 @@ class HolmesDecoderLayer(nn.Module):
     def __init__(self, config: HolmesLLMConfig, layer_idx: int):
         super().__init__()
         self.hidden_size = config.hidden_size
+        
+        config._attn_implementation = "eager"
+        
         self.self_attn = HOLMES_ATTENTION_CLASSES[config._attn_implementation](config=config, layer_idx=layer_idx)
         self.mlp = HolmesMLP(config)
         self.input_layernorm = HolmesRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
@@ -1132,7 +1135,6 @@ class HolmesLLMForCausalLM(HolmesPreTrainedModel):
 
     def __init__(self, config):
         super().__init__(config)
-        config._attn_implementation = "flash_attention_2"  # fixed
         self.generate_labels = False
         self.model = HolmesLLMModel(config)
         self.vocab_size = config.vocab_size
