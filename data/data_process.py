@@ -21,9 +21,7 @@ class DataProcess:
         # 使用多进程处理文件
         with ProcessPoolExecutor(max_workers=max_workers) as executor:
             # 提交所有文件处理任务到进程池
-            result = executor.map(self.process_one_file, self.data_files)
-            for array in tqdm(result, total=len(self.data_files)):
-                yield from array
+            executor.map(self.process_one_file, self.data_files)
             # 等待所有任务完成
         print("All files processed.")
                     

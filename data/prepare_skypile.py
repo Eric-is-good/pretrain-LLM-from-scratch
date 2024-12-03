@@ -2,10 +2,9 @@ import json
 import os
 
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
 from transformers import LlamaTokenizer
-from datasets import Dataset
+from datasets import Dataset, concatenate_datasets
 
 from data_process import DataProcess
 
@@ -13,34 +12,19 @@ from data_process import DataProcess
 # tokenizer = LlamaTokenizer.from_pretrained("model/", use_fast=True)
 
 
-# def get_processed_files(data_dir: str) -> list:
-    # all_files = os.listdir(data_dir)
-    # processed_files = []
-    # for file in all_files:
-    #     if os.path.isdir(os.path.join(data_dir,file)):
-    #         metadata_path = os.path.join(data_dir, file, "metadata.csv")
-    #         if os.path.exists(metadata_path):
-    #             metadata = pd.read_csv(metadata_path)
-    #             processed_files.extend(metadata["original_name"].tolist())
-    #     elif file.endswith(".npy"):
-    #         processed_files.append(file.strip(".npy"))
-    #     else:
-    #         continue
-    # return processed_files
-NUM_WORKERS = 6
-
 class SkyDataProcess(DataProcess):
+    
+    @staticmethod
+    def get_processed_files(data_dir: str) -> list:
+        processed_files = set(file for file in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, file)))
+        return list(processed_files)
     
     def get_all_data_files(self, data_dir):
         # 获取所有json文件
-        self.data_files = [os.path.join(data_dir, file) for file in os.listdir(data_dir)]
-        print(f"{len(self.data_files)} files to process.")
-        
-    def __iter__(self):
-        return self
-    
-    def __next__(self):
-        yield from self.process_all_files(NUM_WORKERS)
+        processed_files = self.get_processed_files(data_dir)
+        all_files = os.listdir(data_dir)
+        self.data_files = [os.path.join(data_dir, file) for file in all_files if file.endswith(".jsonl") and file.strip(".jsonl") not in processed_files]
+        print(f"{len(self.data_files)} files to process. Total {len(self.data_files) + len(processed_files)} files.")
     
     def process_one_file(self, data_path, context=200):
         # 每一行都是一个json对象，读取里面的text字段
@@ -48,7 +32,6 @@ class SkyDataProcess(DataProcess):
         with open(data_path, "r", encoding="utf-8") as f:
             current_tokens = []
             # for every sentence
-            # 多线程tqdm会有显示问题，所以这里不用tqdm
             for line in tqdm(f):
                 sentence = json.loads(line)["text"]
                 tokens = self.tokenize_sentense(sentence)
@@ -84,10 +67,9 @@ class SkyDataProcess(DataProcess):
             npy = self.convert_list_to_numpy(current_tokens)
             array.append({"input_ids": npy})
             
-        return array
-        
-    def get_dataset(self):
-        return Dataset.from_generator(self.__next__, cache_dir="E:\\Projects\\HolmesLM\\dataset\\cache")
+        path = data_path.split(".")[0]
+        dataset = Dataset.from_list(array)
+        dataset.save_to_disk(path)
             
 if __name__ == "__main__":
     dataset_dir = "E:\\Projects\\HolmesLM\\dataset\\skypile"
@@ -99,7 +81,8 @@ if __name__ == "__main__":
     # 获取所有数据文件
     data_process.get_all_data_files(os.path.join(dataset_dir, folder))
     # 处理所有数据文件
-    NUM_WORKERS = 4
-    dataset = data_process.get_dataset()
-    dataset.save_to_disk(os.path.join(dataset_dir, f"{folder}_dataset"))
+    data_process.process_all_files(6)
+    # conbine datasets
+    dataset_dirs = [os.path.join(dataset_dir, folder, dataset) for dataset in  data_process.get_processed_files(os.path.join(dataset_dir, folder))]
+    concatenate_datasets([Dataset.load_from_disk(dataset) for dataset in dataset_dirs]).save_to_disk(os.path.join(dataset_dir, f"{folder}_dataset"))
                 
