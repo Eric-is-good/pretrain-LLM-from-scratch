@@ -11,6 +11,6 @@ input_text = "<|startoftext|>菠萝和凤梨的区别是"
 inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True)
 input_ids = inputs.input_ids.to("cuda")
 print(input_ids)
-output = model.generate(input_ids=input_ids, max_length=512, do_sample=True, temperature=0.8, top_k=10, top_p=0.95, num_return_sequences=1)
+output = model.generate(input_ids=input_ids, max_length=256, do_sample=True, temperature=0.8, top_k=50, top_p=0.95, num_return_sequences=1)
 print(output[0])
 print(tokenizer.decode(output[0], skip_special_tokens=False))
