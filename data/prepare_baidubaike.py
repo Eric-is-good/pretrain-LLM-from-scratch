@@ -52,7 +52,7 @@ class BaiduBaikeDataProcess(DataProcess):
                 # sentence = json.loads(line)["text"]
                 json_sentence = json.loads(line)
                 sentence = convert_baike_to_long_text(json_sentence) 
-                print(sentence)               
+                # print(sentence)               
                 
                 tokens = self.tokenize_sentense(sentence)
                 current_tokens += tokens
