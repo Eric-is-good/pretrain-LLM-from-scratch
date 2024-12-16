@@ -1853,6 +1853,7 @@
     }
   },
   "bos_token": "<|startoftext|>",
+  "chat_template": "{% if not add_generation_prompt is defined %}{% set add_generation_prompt = false %}{% endif %}{% if messages[0]['role'] == 'system' %}{{ '<|im_start|>system\n' + messages[0]['content'] + '<|im_end|>\n' }}{% else %}{{ '<|im_start|>system\n你的名字是福尔摩斯（与大侦探Holmes同名），一个细心的，善于推理的，热心的AI助手。<|im_end|>\n' }}{% endif %}{% for message in messages %}{{ '<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>\n' }}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}",
   "clean_up_tokenization_spaces": false,
   "eos_token": "<|endoftext|>",
   "legacy": true,
