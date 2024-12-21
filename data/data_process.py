@@ -5,9 +5,9 @@ from tqdm import tqdm
 import numpy as np
 
 class DataProcess:
-    def __init__(self, tokenizer):
+    def __init__(self, tokenizer, max_length=4096):
         self.tokenizer = tokenizer
-        self.max_length = 4096
+        self.max_length = max_length
         self.data_files = []
     
     def get_all_data_files(self, data_dir):
@@ -36,6 +36,13 @@ class DataProcess:
         tokens = self.tokenizer.encode(sentence_with_tokens, add_special_tokens=False, 
                                 truncation=True, max_length=self.max_length)
             
+        return tokens
+
+    def tokenize_conversation(self, sentence):
+        start_token_id = self.tokenizer.bos_token_id
+
+        conversation = self.tokenizer.apply_chat_template(conversation=sentence, tokenize=True, add_generation_prompt=False)
+        tokens = [start_token_id] + conversation  # 不使用 eos 结尾，im_end 即可，我们假设对话轮不会终止
         return tokens
     
     # @deprecated("The function is inefficient and inconsistent with currently used methods.")
