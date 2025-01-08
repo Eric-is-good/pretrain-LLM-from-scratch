@@ -56,7 +56,8 @@ def chat():
         print("模型:", response.strip())
 
         # 将模型的回复加入上下文
-        context.append({"role": "assistant", "content": response.strip()})
+        context.append({"role": "assistant", "content": \
+            response.strip().replace("<|im_end|>","")})
 
 # 启动聊天机器人
 if __name__ == "__main__":
