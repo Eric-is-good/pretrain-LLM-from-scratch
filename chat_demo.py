@@ -40,17 +40,17 @@ def chat():
         output = model.generate(
             input_ids,
             max_new_tokens=128,
-            do_sample=True,
-            temperature=0.8,
-            top_k=50,
-            top_p=0.95,
-            num_return_sequences=1,
+            # do_sample=True,
+            # temperature=0.2,
+            # top_k=50,
+            # top_p=0.95,
+            # num_return_sequences=1,
             eos_token_id=tokenizer.convert_tokens_to_ids("<|im_end|>")
         )
 
         # 解码输出
         generated_ids = output[0][len(input_ids[0]):]  # 提取新增部分
-        response = tokenizer.decode(generated_ids, skip_special_tokens=False)
+        response = tokenizer.decode(generated_ids, skip_special_tokens=True)
 
         # 打印模型回复
         print("模型:", response.strip())
