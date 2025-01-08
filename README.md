@@ -27,6 +27,8 @@
 
 从 [**这里 huggingface**](https://huggingface.co/ej2/Holmes_history/tree/main) 下载模型权重，我们记录了一系列的模型权重点。
 
-*目前最新的是训练了 150B token 的模型。*
+*目前最新的是训练了 150B token chat的模型。*
 
 将下载的 model.safetensors 放进代码 model 文件夹下，即可运行 some_test.py 文件，目前只有预训练模型，只能补全句子。
+将下载的 model.safetensors 放进代码 model 文件夹下，即可运行 chat_demo.py 文件，可以对话啦！！！！
+
