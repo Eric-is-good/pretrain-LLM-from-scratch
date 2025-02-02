@@ -32,7 +32,5 @@
 
 *目前最新的是训练了 150B token chat的模型。*
 
-将下载的 model.safetensors 放进代码 model 文件夹下，即可运行 some_test.py 文件，目前只有预训练模型，只能补全句子。
-
-将下载的 model.safetensors 放进代码 model 文件夹下，即可运行 chat_demo.py 文件，可以对话啦！！！！
+将下载的 model.safetensors 放进代码 model 文件夹下，即可运行 chat_demo.py 文件，就可以对话啦！！！！
 
