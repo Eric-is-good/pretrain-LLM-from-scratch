@@ -26,6 +26,15 @@
 我们的**特色**数据集[增强方案](https://github.com/JustinLiii/Holmes_DataAug)
 
 
+
+## 完成代码功能
+
+1. PT 预训练
+2. SFT 微调
+3. GRPO 强化学习
+
+
+
 ## 如何运行
 
 从 [**这里 huggingface**](https://huggingface.co/ej2/Holmes_history/tree/main) 下载模型权重，我们记录了一系列的模型权重点。
