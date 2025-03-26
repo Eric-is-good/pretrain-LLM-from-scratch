@@ -28,4 +28,5 @@ rl = [
     "accelerate>=1.5.2",
     "datasets>=3.4.1",
     "trl>=0.16.0",
+    "wandb>=0.19.8",
 ]

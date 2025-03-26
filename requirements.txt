@@ -43,6 +43,7 @@ certifi==2025.1.31
     #   httpcore
     #   httpx
     #   requests
+    #   sentry-sdk
 charset-normalizer==3.4.1
     # via requests
 click==8.1.8
@@ -51,6 +52,7 @@ click==8.1.8
     #   rich-toolkit
     #   typer
     #   uvicorn
+    #   wandb
 cloudpickle==3.1.1
     # via
     #   outlines
@@ -76,6 +78,8 @@ distro==1.9.0
     # via openai
 dnspython==2.7.0
     # via email-validator
+docker-pycreds==0.4.0
+    # via wandb
 einops==0.8.1
     # via vllm
 email-validator==2.2.0
@@ -108,6 +112,10 @@ fsspec==2024.12.0
     #   torch
 gguf==0.10.0
     # via vllm
+gitdb==4.0.12
+    # via gitpython
+gitpython==3.1.44
+    # via wandb
 h11==0.14.0
     # via
     #   httpcore
@@ -270,6 +278,8 @@ pillow==11.1.0
     #   mistral-common
     #   torchvision
     #   vllm
+platformdirs==4.3.7
+    # via wandb
 prometheus-client==0.21.1
     # via
     #   prometheus-fastapi-instrumentator
@@ -280,14 +290,16 @@ propcache==0.3.1
     # via
     #   aiohttp
     #   yarl
-protobuf==6.30.1
+protobuf==5.29.4
     # via
     #   ray
     #   vllm
+    #   wandb
 psutil==7.0.0
     # via
     #   accelerate
     #   vllm
+    #   wandb
 py-cpuinfo==9.0.0
     # via vllm
 pyarrow==19.0.1
@@ -303,6 +315,7 @@ pydantic==2.10.6
     #   openai
     #   outlines
     #   vllm
+    #   wandb
     #   xgrammar
 pydantic-core==2.27.2
     # via pydantic
@@ -329,6 +342,7 @@ pyyaml==6.0.2
     #   transformers
     #   uvicorn
     #   vllm
+    #   wandb
 pyzmq==26.3.0
     # via vllm
 ray==2.44.0
@@ -352,6 +366,7 @@ requests==2.32.3
     #   tiktoken
     #   transformers
     #   vllm
+    #   wandb
 rich==13.9.4
     # via
     #   rich-toolkit
@@ -374,10 +389,20 @@ sentencepiece==0.2.0
     #   mistral-common
     #   vllm
     #   xgrammar
+sentry-sdk==2.24.1
+    # via wandb
+setproctitle==1.3.5
+    # via wandb
+setuptools==78.1.0
+    # via wandb
 shellingham==1.5.4
     # via typer
 six==1.17.0
-    # via python-dateutil
+    # via
+    #   docker-pycreds
+    #   python-dateutil
+smmap==5.0.2
+    # via gitdb
 sniffio==1.3.1
     # via
     #   anyio
@@ -450,10 +475,13 @@ typing-extensions==4.13.0
     #   typer
     #   uvicorn
     #   vllm
+    #   wandb
 tzdata==2025.2
     # via pandas
 urllib3==2.3.0
-    # via requests
+    # via
+    #   requests
+    #   sentry-sdk
 uvicorn==0.34.0
     # via
     #   fastapi
@@ -462,6 +490,8 @@ uvloop==0.21.0
     # via uvicorn
 vllm==0.8.2
     # via pretrain-llm-from-scratch (pyproject.toml)
+wandb==0.19.8
+    # via pretrain-llm-from-scratch (pyproject.toml:rl)
 watchfiles==1.0.4
     # via
     #   uvicorn
