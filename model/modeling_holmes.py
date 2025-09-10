@@ -34,7 +34,7 @@ from transformers.utils import (
     replace_return_docstrings,
 )
 from transformers.utils.import_utils import is_torch_fx_available
-from model.configuration_Holmes import HolmesConfig
+from model.configuration_holmes import HolmesConfig
 import torch.distributed as dist
 import numpy as np
 

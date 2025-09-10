@@ -4,7 +4,7 @@ import json
 import math
 import warnings
 from typing import List, Optional, Tuple, Union
-from model.configuration_Holmes import HolmesConfig
+from model.configuration_holmes import HolmesConfig
 from model.modeling_holmes import HolmesForCausalLM, HolmesMLP, HolmesMoE
 
 
