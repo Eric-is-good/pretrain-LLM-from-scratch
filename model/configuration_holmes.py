@@ -12,6 +12,7 @@ class HolmesConfig(PretrainedConfig):
 
 
     Args:
+        copy from deepseek
         vocab_size (`int`, *optional*, defaults to 129280):
             Vocabulary size of the Deep model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`HolmesModel`]
