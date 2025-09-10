@@ -1,0 +1,11 @@
+{
+  "train_batch_size": 8,
+  "gradient_accumulation_steps": 1,
+  "zero_optimization": {
+    "stage": 0,
+    "contiguous_gradients": true
+  },
+  "bf16": { "enabled": true },
+  "gradient_clipping": 1.0,
+  "wall_clock_breakdown": false
+}

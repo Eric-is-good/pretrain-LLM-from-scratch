@@ -15,19 +15,57 @@
 
 模型特点：我们的模型是原生思维链模型，将思维链内化到模型本身，即在预训练过程中教会模型思维链式思考方式。
 
-模型特征：
+
+
+## v2 模型 MOE 模型（默认 main 分支）
+
+### 模型特征（[知乎链接](https://zhuanlan.zhihu.com/p/1948409709209031905)）：
+
+- 模型大小 0.6 B，激活0.2b，训练 token 数 100 B
+- 复现了 Deepseek 的 [MLA（论文2.1.1节）](https://arxiv.org/pdf/2412.19437) 和 美团的 [MOE（论文2.1节）](https://arxiv.org/abs/2509.01322)，以及 deepseek 中提到的[两个负载均衡方法（论文2.1.2节）](https://arxiv.org/pdf/2412.19437)
+- 我们希望通过这次预训练，掌握 MOE 模型的训练技巧
+
+
+
+
+
+### 数据集
+
+使用面壁的 https://huggingface.co/datasets/openbmb/Ultra-FineWeb
+
+
+
+### 完成代码功能
+
+tokenizing 和 预训练代码，一行代码启动训练
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --nproc_per_node=4 pretrain.py
+```
+
+
+
+
+
+
+
+
+
+## v1 模型稠密模型（需要切换到 v1 分支）
+
+### 模型特征：
 
 - 模型大小 0.5 B，训练 token 数 0.5 T
 - 我们希望模型在架构上，使用改良的 transformer，使得模型在推理时，具有更快的速度
 - 我们希望模型具有强大的思维链能力（接近高一量级 ≈ 10B的模型所具有的）
 
 
-## 数据集
+### 数据集
 我们的**特色**数据集[增强方案](https://github.com/JustinLiii/Holmes_DataAug)
 
 
 
-## 完成代码功能
+### 完成代码功能
 
 1. PT 预训练
 2. SFT 微调
@@ -35,7 +73,7 @@
 
 
 
-## 如何运行
+### 如何运行
 
 从 [**这里 huggingface**](https://huggingface.co/ej2/Holmes_history/tree/main) 下载模型权重，我们记录了一系列的模型权重点。
 
