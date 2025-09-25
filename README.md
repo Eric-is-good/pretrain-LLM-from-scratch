@@ -30,11 +30,7 @@
 
 从 [**这里 huggingface**](https://huggingface.co/ej2/Holmes_moe_history) 下载模型权重，我们记录了一系列的模型权重点和训练日志。
 
-*目前最新的是训练了 1.5B token pretrain的模型。*
-
-将下载的 model.safetensors 放进代码 model 文件夹下，即可运行 chat_demo.py 文件，就可以对话啦！！！！
-
-
+*目前最新的是训练了 30B token pretrain的模型。*
 
 
 
