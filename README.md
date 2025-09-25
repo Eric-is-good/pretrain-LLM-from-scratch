@@ -52,7 +52,12 @@ tokenizing 和 预训练代码，一行代码启动训练
 CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --nproc_per_node=4 pretrain.py
 ```
 
+推理代码（针对预训练模型的补全任务）
+下载 hf 上面的模型权重文件夹后，运行 demo 即可
 
+```bash
+python3 chat_demo.py 
+```
 
 
 
