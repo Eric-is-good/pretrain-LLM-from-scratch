@@ -20,7 +20,7 @@ output = model.generate(
     top_k=25,                 # 限定候选词为概率最高的 50
     top_p=0.9,                # nucleus sampling，累积概率阈值
     repetition_penalty=1.2,   # 惩罚重复，>1.0 就会抑制复读
-    # no_repeat_ngram_size=5    # 避免出现相同的 3-gram 片段
+    # no_repeat_ngram_size=5    # 避免出现相同的 n-gram 片段
 )
 print(output[0])
 print(tokenizer.decode(output[0], skip_special_tokens=False))
