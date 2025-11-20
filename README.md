@@ -30,30 +30,55 @@
 
 从 [**这里 huggingface**](https://huggingface.co/ej2/Holmes_moe_history) 下载模型权重，我们记录了一系列的模型权重点和训练日志。
 
-*目前最新的是训练了 10B token pretrain的模型。*
+*目前最新的是训练了 70B token pretrain的模型。*
+
+pretrain 阶段暂告一段落，现在开始 SFT
 
 
 
 ### 数据集
 
-使用面壁的 https://huggingface.co/datasets/openbmb/Ultra-FineWeb
+https://loz42cxvnh.feishu.cn/docx/ObsMd55ufomENvxWodKciCaSnCc 
+
+https://huggingface.co/datasets/ej2/Holmes_moe_sft_data
 
 
 
 ### 完成代码功能
 
-tokenizing 和 预训练代码，一行代码启动训练
+#### tokenizing 和 预训练代码，一行代码启动训练
 
 ```bash
 CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --nproc_per_node=4 pretrain.py
 ```
 
-推理代码（针对预训练模型的补全任务）
+
+
+#### 基于 LLaMA Factory 的微调代码，位于 SFT 子文件夹下
+
+```bash
+bash train.sh
+```
+
+
+
+#### 补全测试代码（针对预训练模型的补全任务）
+
 下载 hf 上面的模型权重文件夹后，运行 demo 即可
+
+```bash
+python3 continue_writing_demo.py 
+```
+
+
+
+#### 对话测试代码（针对微调模型的对话任务，使用 qwen3 混合思考模板）
 
 ```bash
 python3 chat_demo.py 
 ```
+
+
 
 
 

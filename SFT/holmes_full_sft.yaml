@@ -1,0 +1,60 @@
+### 正式训练前清理 token 缓存
+### model
+model_name_or_path: /home/users/nus/e1352533/scratch/training/sft_base  # 你的holmes模型路径
+trust_remote_code: true  # 重要：允许加载自定义代码
+# resume_from_checkpoint: /home/users/nus/e1352533/scratch/training/test/checkpoint-20 # 👈 复制一个地方
+
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full  # 全量微调
+flash_attn: fa2  # 启用FlashAttention-2
+enable_liger_kernel: true
+gradient_checkpointing: true
+optim: adamw_bnb_8bit  # 使用8-bit AdamW
+# optim: adamw_torch_fused
+deepspeed: examples/deepspeed/ds_z2_config.json  # 可选：使用DeepSpeed 
+
+### dataset
+dataset: jiangshu_think,nv_sft_trans,ring_math_trans,sharegpt_1,sharegpt_2,en_zh_mix,zh_en_mix,baike,bloss_chat,deepseek,zhihu,openmathinstruct_trans,openmathinstruct2_sample,jiangshu
+template: qwen3  # 使用qwen3模板
+packing: true
+cutoff_len: 4096
+overwrite_cache: false # 👈 后续改为 false
+cache_dir: /home/users/nus/e1352533/scratch/hf_cache  # 指定HF缓存位置
+preprocessing_num_workers: 16
+dataloader_num_workers: 4
+tokenized_path: /home/users/nus/e1352533/scratch/hf_cache/sft_token  # 👈 token 保存路径
+
+### template settings (关键部分)
+enable_thinking: null  # 设置为null表示混合模式 (True=启用思维链, False=禁用, null=混合)
+
+### output
+output_dir: /home/users/nus/e1352533/scratch/training/ckp/
+logging_steps: 1
+save_steps: 500
+save_total_limit: 2 
+plot_loss: true
+overwrite_output_dir: true
+save_only_model: false
+report_to: none  # 可选: wandb, tensorboard, swanlab
+
+### train
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 16
+learning_rate: 6.0e-5
+num_train_epochs: 1.0
+lr_scheduler_type: cosine_with_min_lr  # 带最小学习率的余弦
+warmup_ratio: 0.01
+lr_scheduler_kwargs: 
+  min_lr: 6.0e-6     
+bf16: true
+ddp_timeout: 180000000
+
+### eval (可选)
+# eval_dataset: alpaca_en_demo
+# val_size: 0.1
+# per_device_eval_batch_size: 1
+# eval_strategy: steps
+# eval_steps: 500

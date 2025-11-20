@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#PBS -N GpuPretrainJob
+#PBS -l select=1:ncpus=8:mem=110GB:ngpus=2
+#PBS -l walltime=72:00:00
+#PBS -j oe
+#PBS -o pbs_out.txt
+#PBS -P personal-e1352533
+#PBS -q normal
+
+# --- 执行作业命令 ---
+
+# 加载 Singularity 模块
+module load singularity
+
+# 打印一些环境信息以供调试
+echo "--------------------------------"
+nvidia-smi
+echo "--------------------------------"
+
+# 定义变量
+SIF_PATH="/home/users/nus/e1352533/verl.sif"
+HOME_PATH="/home/users/nus/e1352533/code/pretrain-LLM-from-scratch/"
+
+# --- 运行主程序 (安装和执行在同一个singularity命令中) ---
+echo "Starting container, installing packages, and running training script..."
+singularity exec --nv -B /scratch ${SIF_PATH} bash /home/users/nus/e1352533/code/sft/train.sh > /home/users/nus/e1352533/code/sft/log.txt 2>&1 
+
+
+echo "Job finished."

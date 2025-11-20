@@ -1,0 +1,44 @@
+{
+  "jiangshu_think": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/jiangshu_think/"
+  },
+  "nv_sft_trans": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/nv_sft_trans/"
+  },
+  "ring_math_trans": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/ring_math_trans/"
+  },
+  "sharegpt_1": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/sharegpt/1/"
+  },
+  "sharegpt_2": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/sharegpt/aug/"
+  },
+  "en_zh_mix": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/trans_fineweb/en_zh_mix/"
+  },
+  "zh_en_mix": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/trans_fineweb/zh_en_mix/"
+  },
+  "baike": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/baike.jsonl"
+  },
+  "bloss_chat": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/bloss_chat.jsonl"
+  },
+  "deepseek": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/deepseek.jsonl"
+  },
+  "zhihu": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/zhihu.jsonl"
+  },
+  "openmathinstruct_trans": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/local_home/zhupeiyin/data/OpenMath/openmathinstruct_trans/"
+  },
+  "openmathinstruct2_sample": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/openmathinstruct2_sample.jsonl"
+  },
+  "jiangshu": {
+    "file_name": "/home/users/nus/e1352533/scratch/sft_data/Holmes_moe_sft_data/jiangshu_sft_ins.jsonl"
+  }
+}
