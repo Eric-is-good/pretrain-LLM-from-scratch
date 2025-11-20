@@ -26,7 +26,7 @@
 - 我们希望通过这次预训练，掌握 MOE 模型的训练技巧
 
 
-### 如何运行
+### 模型地址
 
 从 [**这里 huggingface**](https://huggingface.co/ej2/Holmes_moe_history) 下载模型权重，我们记录了一系列的模型权重点和训练日志。
 
