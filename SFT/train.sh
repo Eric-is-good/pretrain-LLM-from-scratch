@@ -1,5 +1,5 @@
 echo '--- Now inside container ---'
-pip install --upgrade transformers==4.57.1 accelerate
+pip install --upgrade transformers==4.57.1 accelerate==1.11.0
 pip install trl==0.8.6
 pip install bitsandbytes==0.48.1
 pip install deepspeed==0.16.9
