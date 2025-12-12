@@ -30,7 +30,7 @@
 
 从 [**这里 huggingface**](https://huggingface.co/ej2/Holmes_moe_history) 下载模型权重，我们记录了一系列的模型权重点和训练日志。
 
-*目前最新的是基于训练了 70B token pretrain的模型，进行 1B token sft的模型*
+*目前最新的是基于训练了 70B token pretrain的模型，进行 5B token sft的模型*
 
 pretrain 阶段暂告一段落，现在开始 SFT
 
