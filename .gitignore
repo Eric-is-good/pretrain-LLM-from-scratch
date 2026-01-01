@@ -9,3 +9,6 @@
 
 # 忽略 venv 虚拟环境
 .venv
+
+# wandb logging
+wandb

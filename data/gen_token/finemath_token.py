@@ -24,23 +24,19 @@ def prepare_and_tokenize_dataset():
         raise ValueError(f"在目录 {DATA_FILES_PATH} 中没有找到 Parquet 文件")
     print(f"找到 {len(data_files)} 个 Parquet 文件")
 
-    print("\n=== 步骤 2/4: 加载数据集（content/score/source） ===")
+    print("\n=== 步骤 2/4: 加载数据集（text） ===")
     # 不使用 streaming 以便多进程 map/filter，并能获得长度与进度
     raw_ds = load_dataset(
         "parquet",
         data_files=data_files,
         split="train",
         streaming=False,
-        features=Features({
-            "content": Value("string"),
-            "score": Value("float32"),
-            "source": Value("string"),
-        }),
+        cache_dir="/home/users/nus/e1352689/scratch/hf_cache"
     )
     # 仅提示一个示例（如果有）
     try:
         ex = next(iter(raw_ds))
-        print(f"示例行：content[:80]={ex.get('content','')[:80]!r}, score={ex.get('score')}, source={ex.get('source')}")
+        print(f"示例行：content[:80]={ex.get('text','')[:80]!r}")
     except StopIteration:
         raise ValueError("数据集为空，请检查 Parquet 文件内容")
 
@@ -50,7 +46,7 @@ def prepare_and_tokenize_dataset():
     if missing:
         raise ValueError(f"缺失必须列: {missing}，现有列: {raw_ds.column_names}")
     
-    filtered_ds = raw_ds
+    filtered_ds = raw_ds.select_columns(["text"])
 
     print("\n=== 步骤 3/4: 加载 Tokenizer 并进行分词 ===")
     tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH, trust_remote_code=True)
@@ -69,7 +65,7 @@ def prepare_and_tokenize_dataset():
 
     def tokenize_function(examples):
         # 在每条样本末尾追加分隔符文本，以保证拼接时文档间有边界
-        texts = [(t if isinstance(t, str) else "") + SEP_TEXT for t in examples["content"]]
+        texts = [(t if isinstance(t, str) else "") + SEP_TEXT for t in examples["text"]]
         # 仅返回 input_ids，不生成 attention_mask 以节省空间
         encoded = tokenizer(
             texts,
@@ -88,7 +84,7 @@ def prepare_and_tokenize_dataset():
     )
     print(f"分词完成：样本数 = {len(tokenized_ds)}；列 = {tokenized_ds.column_names}")
 
-    print("\n=== 步骤 5/5: 块化为固定长度（仅保留 input_ids） ===")
+    print("\n=== 步骤 4/4: 块化为固定长度（仅保留 input_ids） ===")
     def group_texts(examples):
         # 仅有 input_ids 一列
         concatenated = list(chain.from_iterable(examples["input_ids"]))
